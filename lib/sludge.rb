@@ -1,0 +1,12 @@
+require 'net/https'
+require 'uri'
+require 'json'
+require 'openssl'
+require 'rack'
+require 'digest/md5'
+require 'base64'
+require 'byebug'
+
+# require 'triangle/utils'
+# require 'triangle/sign'
+require_relative 'sludge/client'
