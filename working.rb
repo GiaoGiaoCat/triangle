@@ -32,25 +32,27 @@ def get_btc_price
 end
 
 def buy_btc(price)
+  1000 / p2
+end
 
+def straddle_strike(p1, p2, p3)
+  buy_btc(p2)
 end
 
 def working
   initialize_data
-
-  # loop do
-  #
-  # end
 
   p2 = get_btc_price
 
   CURRENCIES.each do |currency|
     p1 = @client.get_market_depth("#{currency}usdt").bids[0][0].to_f
     usdt_symbol = @new_symbols.find { |symbol| symbol["base-currency"] == currency && symbol["quote-currency"] == "btc" }
-    p3 = ((p1 * 0.998)/(p2/0.998)).round(usdt_symbol["price-precision"])
+    temp_p3 = ((p1 * 0.998)/(p2/0.998)).round(usdt_symbol["price-precision"])
+    p3 = (@client.get_market_depth("#{currency}btc").asks[0][0].to_f * 0.998).round(usdt_symbol["price-precision"])
 
-    p4 = (@client.get_market_depth("#{currency}btc").asks[0][0].to_f * 0.998).round(usdt_symbol["price-precision"])
-    puts "#{currency} #{p3}, #{p4}"
+    puts "#{currency}, temp_p3 #{temp_p3}, p3 #{p3}"
+    # 满足条件进行套利测试
+    # straddle_strike(p1, p2, p3) if temp_p3 < p3
   end
 end
 
