@@ -50,7 +50,7 @@ def working
     temp_p3 = ((p1 * 0.998)/(p2/0.998)).round(usdt_symbol["price-precision"])
     p3 = (@client.get_market_depth("#{currency}btc").asks[0][0].to_f * 0.998).round(usdt_symbol["price-precision"])
 
-    puts "#{currency}, temp_p3 #{temp_p3}, p3 #{p3}"
+    puts "#{currency}, p1 #{p1}, p2 #{p2}, temp_p3 #{temp_p3}, p3 #{p3}"
     # 满足条件进行套利测试
     # straddle_strike(p1, p2, p3) if temp_p3 < p3
   end
