@@ -1,5 +1,7 @@
 module Sludge
   class Client
+    attr :res
+
     def initialize(options = {})
       @url = options['url'] || default_url
     end
@@ -9,8 +11,12 @@ module Sludge
     end
 
     def get_market_depth(symbol_pair)
-     get("/market/depth?symbol=#{symbol_pair}&type=step0")
-   end
+      get("/market/depth?symbol=#{symbol_pair}&type=step0")
+    end
+
+    def method_name
+
+    end
 
     private
 
@@ -19,7 +25,8 @@ module Sludge
       end
 
       def get(path, params = {})
-        do_get(path, params)
+        result = do_get(path, params)
+        @res = Response.new(result)
       end
 
 

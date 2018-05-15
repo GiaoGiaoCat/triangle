@@ -9,4 +9,5 @@ require 'byebug'
 
 # require 'triangle/utils'
 # require 'triangle/sign'
+require_relative 'sludge/response'
 require_relative 'sludge/client'
