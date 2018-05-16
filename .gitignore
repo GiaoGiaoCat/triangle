@@ -17,6 +17,8 @@
 .dat*
 .repl_history
 build/
+.DS_Store
+.byebug_history
 *.bridgesupport
 build-iPhoneOS/
 build-iPhoneSimulator/
