@@ -1,10 +1,18 @@
 #!/usr/bin/env ruby
 require_relative 'lib/sludge'
+require_relative 'lib/sludge/configuration'
 
+# CURRENCIES = %w[
+#   btc bch eth etc ltc eos xrp omg dash zec ada act btm bts ht trx neo qtum ela ven snt nas hsr elf gnt
+# ]
+
+CURRENCIES = %w[
+  bch
+]
 
 def initialize_data
   @client = Sludge::Client.new
-  @wallet = Sludge::Wallet.new(usdt: 1000)
+  @wallet = Sludge::Wallet.new(usdt: 1000, btc: 0)
 
   file = File.read "symbols.json"
   data = JSON.parse(file)
@@ -25,34 +33,45 @@ def get_btc_price
 end
 
 def buy_btc(price)
-  @wallet.buy("usdt", "btc", price)
-  @wallet.print_log
+  amount = (@wallet.usdt / price).floor(BTC_USDT_AMOUNT_PRECISION)
+  @wallet.usdt -= (amount * price)
+  @wallet.btc = amount * 0.998
+  print_wallet
 end
 
 def buy_bch(price)
   amount = (@wallet.btc / price).floor(BCH_BTC_AMOUNT_PRECISION)
   @wallet.btc -= (amount * price)
   @wallet.bch = amount * 0.998
-  @wallet.print_log
+  print_wallet
 end
 
 def sell_bch(price)
   amount = (@wallet.bch * price).floor(BCH_USDT_AMOUNT_PRECISION)
   @wallet.usdt += (amount * 0.998)
   @wallet.bch -= @wallet.bch.floor(BCH_USDT_PRICE_PRECISION)
+  print_wallet
+end
+
+def print_wallet
   @wallet.print_log
 end
 
-
+# USDT 市场买入 BTC，在 BTC 市场兑换 BCH，去 USDT 市场卖出 BCH
 def straddle_strike(p1, p2, p3)
   buy_btc(p1)
   buy_bch(p3)
   sell_bch(p2)
 end
 
-def working
-  initialize_data
+# BTC 市场兑换 BCH，去 USDT 市场卖出 BCH，购入等量 BTC
+def margin_straddle(p1, p2, p3)
+  buy_bch(p3)
+  sell_bch(p2)
+  buy_btc(p1)
+end
 
+def working
   p1 = get_btc_price
 
   CURRENCIES.each do |currency|
@@ -66,10 +85,14 @@ def working
     puts "#{currency}, p1 #{p1}, p2 #{p2}, p3 #{sprintf('%f', p3)}, left_condition #{sprintf('%f', left_condition)}, right_condition #{sprintf('%f', right_condition)}"
 
     # 满足条件进行套利测试
-    straddle_strike(p1, p2, p3)
+    straddle_strike(p1, p2, p3) #if left_condition > right_condition
     # margin_straddle(p1, p2, p3)
   end
 end
 
 
-working
+initialize_data
+loop do
+  working
+  sleep 5
+end
