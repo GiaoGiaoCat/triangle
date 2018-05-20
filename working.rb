@@ -84,9 +84,15 @@ def working
 
     puts "#{currency}, p1 #{p1}, p2 #{p2}, p3 #{sprintf('%f', p3)}, left_condition #{sprintf('%f', left_condition)}, right_condition #{sprintf('%f', right_condition)}"
 
-    # 满足条件进行套利测试
     straddle_strike(p1, p2, p3) #if left_condition > right_condition
     # margin_straddle(p1, p2, p3)
+
+    # 以下是期待的条件
+    # if left_condition > right_condition
+    #   straddle_strike(p1, p2, p3)
+    # else
+    #   margin_straddle(p1, p2, p3)
+    # end
   end
 end
 
